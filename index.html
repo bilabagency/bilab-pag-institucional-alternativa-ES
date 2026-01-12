@@ -11,8 +11,6 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-
     <style>
         /* --- CONFIGURACIÓN GENERAL & VARIABLES --- */
         :root {
@@ -34,7 +32,7 @@
         html { scroll-behavior: smooth; overflow-x: hidden; }
         
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-dark); /* Color base de fondo */
             color: var(--cream);
             font-family: var(--font-body);
             overflow-x: hidden;
@@ -44,14 +42,15 @@
         }
 
         /* CANVAS GLOBAL FIXED */
+        /* Z-index bajo para que quede detras del contenido, pero sobre el color de fondo */
         #neural-canvas {
-            position: fixed; /* Fijo para toda la web */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Detrás de todo */
-            opacity: 0.4;
+            z-index: -1; 
+            opacity: 0.35; /* Sutil */
             pointer-events: none;
         }
 
@@ -113,6 +112,7 @@
             margin: 0 auto;
             padding: 0 20px;
             position: relative;
+            z-index: 2; /* Asegura que el contenido esté sobre el canvas */
         }
 
         /* --- HEADER & NAV --- */
@@ -126,7 +126,7 @@
         }
 
         header.scrolled {
-            background: rgba(10, 10, 12, 0.9);
+            background: rgba(10, 10, 12, 0.95);
             backdrop-filter: blur(15px);
             padding: 15px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -160,20 +160,47 @@
 
         .hamburger { display: none; font-size: 1.5rem; cursor: pointer; color: var(--cream); z-index: 1001; }
 
+        /* --- SECCIONES COMUNES --- */
+        /* IMPORTANTE: Background transparent para ver el canvas */
+        .process-section, .team-section, .cases-section { 
+            padding: 120px 0; 
+            position: relative;
+            background: transparent; 
+        }
+
+        .section-header { margin-bottom: 60px; }
+        .section-tag {
+            color: var(--magenta);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Indicador de Swipe para Mobile */
+        .swipe-indicator {
+            font-size: 0.8rem; 
+            margin-top: 10px; 
+            opacity: 0.6; 
+            display: none; /* Desktop hidden */
+            align-items: center;
+            gap: 8px;
+        }
+
         /* --- HERO SECTION --- */
         .hero {
             height: 100vh;
             display: flex;
             align-items: center;
             position: relative;
-            /* overflow hidden removido para permitir ver particulas, pero controlado por body */
             padding-top: 80px; 
         }
 
         .hero-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            /* Gradiente solo en Hero para dar profundidad al texto */
             background: radial-gradient(circle at 50% 50%, transparent 0%, var(--bg-dark) 90%);
             z-index: 1;
             pointer-events: none;
@@ -201,18 +228,6 @@
         }
 
         /* --- PROCESS SECTION --- */
-        .process-section { padding: 150px 0; position: relative; }
-        .section-header { margin-bottom: 80px; }
-        .section-tag {
-            color: var(--magenta);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: block;
-        }
-
         .process-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -253,11 +268,76 @@
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* --- CASES SECTION (Ahora Grid Nativa) --- */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas en desktop */
+            gap: 30px;
+        }
+
+        .case-card { 
+            height: 450px; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            position: relative; 
+            display: flex; 
+            align-items: flex-end; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            cursor: pointer; 
+            width: 100%;
+        }
+        
+        .case-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.4s; }
+        .case-card:hover .case-bg { transform: scale(1.1); opacity: 0.4; }
+        .case-content { position: relative; z-index: 10; padding: 30px; width: 100%; background: linear-gradient(0deg, #000 0%, transparent 100%); }
+
+        /* --- TEAM SECTION --- */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .team-card {
+            background: rgba(22, 21, 23, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+            position: relative;
+            backdrop-filter: blur(3px);
+            width: 100%;
+        }
+
+        .team-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+
+        .team-img-wrapper {
+            width: 100%;
+            height: 320px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .team-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            filter: grayscale(100%);
+            transition: 0.5s;
+        }
+
+        .team-card:hover .team-img { filter: grayscale(0%); transform: scale(1.05); }
+
+        .team-info { padding: 25px 15px; background: rgba(255,255,255,0.01); }
+        .team-name { color: #fff; font-size: 1.1rem; margin-bottom: 5px; font-weight: 600; }
+        .team-role { color: var(--gold); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+
         /* --- CLIENTS MARQUEE --- */
         .clients-section { 
             padding: 80px 0; 
-            /* Fondo semi-transparente para que se vean las particulas detras */
-            background: rgba(14, 13, 15, 0.85); 
+            background: rgba(14, 13, 15, 0.85); /* Semitransparente para ver fondo */
             border-top: 1px solid rgba(255,255,255,0.02);
             border-bottom: 1px solid rgba(255,255,255,0.02);
             overflow: hidden;
@@ -276,7 +356,6 @@
             z-index: 2;
             pointer-events: none;
         }
-        /* Ajuste de gradientes para coincidir con el fondo semitransparente */
         .marquee-container::before { left: 0; background: linear-gradient(to right, #0e0d0f, transparent); }
         .marquee-container::after { right: 0; background: linear-gradient(to left, #0e0d0f, transparent); }
 
@@ -316,58 +395,6 @@
             object-fit: contain;
         }
 
-        /* --- TEAM SECTION --- */
-        .team-section { padding: 120px 0; }
-        
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 30px;
-        }
-
-        .team-card {
-            background: rgba(22, 21, 23, 0.4); /* Leve fondo para legibilidad sobre particulas */
-            border-radius: 12px;
-            overflow: hidden;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-            position: relative;
-            backdrop-filter: blur(3px);
-        }
-
-        .team-card:hover { border-color: var(--gold); transform: translateY(-5px); }
-
-        .team-img-wrapper {
-            width: 100%;
-            height: 320px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .team-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top center;
-            filter: grayscale(100%);
-            transition: 0.5s;
-        }
-
-        .team-card:hover .team-img { filter: grayscale(0%); transform: scale(1.05); }
-
-        .team-info { padding: 25px 15px; background: rgba(255,255,255,0.01); }
-        .team-name { color: #fff; font-size: 1.1rem; margin-bottom: 5px; font-weight: 600; }
-        .team-role { color: var(--gold); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
-
-        /* --- CASOS (SWIPER) --- */
-        .cases-section { padding: 100px 0; }
-        .swiper-cases { padding-bottom: 50px !important; overflow: visible !important; }
-        .case-card { height: 450px; border-radius: 20px; overflow: hidden; position: relative; display: flex; align-items: flex-end; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
-        .case-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.4s; }
-        .case-card:hover .case-bg { transform: scale(1.1); opacity: 0.4; }
-        .case-content { position: relative; z-index: 10; padding: 30px; width: 100%; background: linear-gradient(0deg, #000 0%, transparent 100%); }
-
         /* --- FAQ --- */
         .faq-section { padding: 100px 0; max-width: 800px; margin: 0 auto; }
         .faq-item { border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; }
@@ -376,16 +403,16 @@
         .faq-answer { padding-bottom: 20px; color: var(--text-grey); font-size: 1rem; line-height: 1.6; }
 
         /* --- CONTACT & FORM --- */
-        /* Gradiente con opacidad para ver particulas */
         .contact-section { 
             padding: 100px 0; 
-            background: linear-gradient(180deg, rgba(10,10,12,0.8) 0%, rgba(26,26,30,0.9) 100%);
+            /* Gradiente oscuro pero con transparencia */
+            background: linear-gradient(180deg, rgba(10,10,12,0.8) 0%, rgba(26,26,30,0.95) 100%);
             backdrop-filter: blur(2px);
         }
         .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
         
         .custom-form-container {
-            background: rgba(22, 21, 23, 0.7); /* Mas translucido */
+            background: rgba(22, 21, 23, 0.7);
             padding: 40px;
             border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.05);
@@ -466,12 +493,16 @@
             .hero-title { font-size: 3.5rem; }
             .process-grid { grid-template-columns: repeat(2, 1fr); }
             .contact-layout { grid-template-columns: 1fr; gap: 40px; }
+            .cases-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 768px) {
             /* General */
             .container { padding: 0 20px; }
             .section-header h2 { font-size: 2rem; }
+            
+            /* UI Helper */
+            .swipe-indicator { display: flex; }
             
             /* Navbar */
             .desktop-menu { display: none; }
@@ -481,24 +512,24 @@
             .hero-title { font-size: 2.5rem; line-height: 1.2; word-wrap: break-word; }
             .hero-subtitle { font-size: 1.1rem; }
             
-            /* Process Section - Horizontal Scroll (Swipe feel) */
-            .process-grid {
+            /* --- SWIPEABLE SECTIONS (Process, Cases, Team) --- */
+            /* Aplicamos la misma lógica a las tres grillas */
+            .process-grid, .cases-grid, .team-grid {
                 display: flex;
                 overflow-x: auto;
                 scroll-snap-type: x mandatory;
                 gap: 20px;
-                padding-bottom: 20px; 
-                margin: 0 -20px; 
-                padding: 0 20px 20px 20px; 
+                padding-bottom: 25px; /* Espacio para scrollbar/dedo */
+                margin: 0 -20px; /* Desborde para efecto full width */
+                padding-left: 20px; /* Padding interno inicial */
+                padding-right: 20px; /* Padding interno final */
             }
             
-            /* AQUI ESTA LA MAGIA DEL SWIPE */
-            .process-card {
-                /* 85% del ancho para que se vea un borde de la siguiente tarjeta */
+            /* Tarjetas con efecto "Peek" (85% width) */
+            .process-card, .case-card, .team-card {
                 min-width: 85%; 
                 scroll-snap-align: center;
-                /* El margen ayuda a separar visualmente */
-                margin-right: 0px; 
+                margin-right: 0; 
             }
 
             /* Buttons */
@@ -543,7 +574,6 @@
 
     <section id="home" class="hero">
         <div class="hero-overlay"></div>
-        
         <div class="container hero-content">
             <span class="section-tag highlight-gold">Business Intelligence Lab</span>
             <h1 class="hero-title">
@@ -559,7 +589,7 @@
             <div class="section-header">
                 <span class="section-tag">Metodología</span>
                 <h2>Cómo lo hacemos</h2>
-                <p class="hide-desktop" style="font-size: 0.8rem; margin-top: 10px; opacity: 0.6; display: none;"> <i class="fa-solid fa-arrow-right"></i> Deslizá para ver más</p>
+                <div class="swipe-indicator"><i class="fa-solid fa-arrow-right"></i> Deslizá</div>
             </div>
             
             <div class="process-grid">
@@ -597,33 +627,31 @@
             <div class="section-header">
                 <span class="section-tag">Nuestro Trabajo</span>
                 <h2>Casos de Éxito</h2>
+                <div class="swipe-indicator"><i class="fa-solid fa-arrow-right"></i> Deslizá</div>
             </div>
             
-            <div class="swiper swiper-cases">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide case-card">
-                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1000&auto=format&fit=crop" class="case-bg" alt="Inmobiliaria">
-                        <div class="case-content">
-                            <div style="color:var(--gold); font-size:12px; font-weight:700;">VENTAS INMOBILIARIAS</div>
-                            <h3>Team Ruscitti | Remax Futuro</h3>
-                        </div>
-                    </div>
-                    <div class="swiper-slide case-card">
-                        <img src="https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=1000&auto=format&fit=crop" class="case-bg" alt="Agua">
-                        <div class="case-content">
-                            <div style="color:var(--gold); font-size:12px; font-weight:700;">VENTA DE SERVICIO</div>
-                            <h3>Yakú Agua Saludable</h3>
-                        </div>
-                    </div>
-                    <div class="swiper-slide case-card">
-                        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1000&auto=format&fit=crop" class="case-bg" alt="Construccion">
-                        <div class="case-content">
-                            <div style="color:var(--gold); font-size:12px; font-weight:700;">SERVICIOS EEUU</div>
-                            <h3>Contratistas Gómez</h3>
-                        </div>
+            <div class="cases-grid">
+                <div class="case-card">
+                    <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1000&auto=format&fit=crop" class="case-bg" alt="Inmobiliaria">
+                    <div class="case-content">
+                        <div style="color:var(--gold); font-size:12px; font-weight:700;">VENTAS INMOBILIARIAS</div>
+                        <h3>Team Ruscitti | Remax Futuro</h3>
                     </div>
                 </div>
-                <div class="swiper-pagination"></div>
+                <div class="case-card">
+                    <img src="https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=1000&auto=format&fit=crop" class="case-bg" alt="Agua">
+                    <div class="case-content">
+                        <div style="color:var(--gold); font-size:12px; font-weight:700;">VENTA DE SERVICIO</div>
+                        <h3>Yakú Agua Saludable</h3>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1000&auto=format&fit=crop" class="case-bg" alt="Construccion">
+                    <div class="case-content">
+                        <div style="color:var(--gold); font-size:12px; font-weight:700;">SERVICIOS EEUU</div>
+                        <h3>Contratistas Gómez</h3>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -648,7 +676,7 @@
                 <div class="logo-card-slide dark"><img src="https://i.ibb.co/SXy6B28B/Logo-principal-variable01-Mesa-de-trabajo-1-1.png" alt="CODE"></div>
                 <div class="logo-card-slide"><img src="https://i.ibb.co/wFPpGKCH/LOGO-RMX-DELUXE.png" alt="Remax Deluxe"></div>
                 <div class="logo-card-slide"><img src="https://i.ibb.co/zWTj2YzS/LOGO-REMAX-INVICTUS.png" alt="Remax Invictus"></div>
-
+                
                 <div class="logo-card-slide"><img src="https://www.somosfuturo.com.ar/images/logo-header.png" alt="Futuro"></div>
                 <div class="logo-card-slide"><img src="https://remaxcordial.com.ar/img/remax%20logo.png" alt="Cordial"></div>
                 <div class="logo-card-slide dark"><img src="https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img,h_54/https://remax-diagonal2.com.ar/wp-content/uploads/2021/02/logo-remax-diag2-menu.png" alt="Diagonal"></div>
@@ -671,6 +699,7 @@
             <div class="section-header">
                 <span class="section-tag">Squad</span>
                 <h2>El Equipo</h2>
+                <div class="swipe-indicator"><i class="fa-solid fa-arrow-right"></i> Deslizá</div>
             </div>
             <div class="team-grid">
                 <div class="team-card">
@@ -831,8 +860,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
     <script>
         // Inicializar GSAP
         gsap.registerPlugin(ScrollTrigger);
@@ -860,20 +887,16 @@
         // --- ANIMACIONES GSAP ---
         gsap.from(".hero-content", { duration: 1.5, y: 100, opacity: 0, ease: "power4.out", delay: 0.2 });
         
-        // Animacion Grid Procesos (Solo desktop)
+        // Animaciones simples para desktop
         if (window.innerWidth > 768) {
-            gsap.utils.toArray('.process-card').forEach((card, i) => {
-                gsap.from(card, { scrollTrigger: { trigger: card, start: "top 85%" }, y: 50, opacity: 0, duration: 0.8, delay: i * 0.1, ease: "power3.out" });
+            gsap.utils.toArray('.process-card, .case-card, .team-card').forEach((card, i) => {
+                gsap.from(card, { 
+                    scrollTrigger: { trigger: card, start: "top 90%" }, 
+                    y: 30, opacity: 0, duration: 0.6, ease: "power2.out" 
+                });
             });
         }
         
-        // Swiper Casos
-        const swiper = new Swiper('.swiper-cases', {
-            slidesPerView: 1, spaceBetween: 30, grabCursor: true,
-            pagination: { el: '.swiper-pagination', clickable: true },
-            breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
-        });
-
         // --- MANEJO DEL FORMULARIO CON WEBHOOK ---
         const form = document.getElementById('biLabContactForm');
         const submitBtn = document.getElementById('submitBtn');
@@ -929,7 +952,7 @@
         const ctx = canvas.getContext('2d');
         let width, height;
         let particles = [];
-        const particleCount = window.innerWidth < 768 ? 35 : 70; // Cantidad de particulas
+        const particleCount = window.innerWidth < 768 ? 35 : 70; 
         const connectionDistance = window.innerWidth < 768 ? 100 : 150;
 
         function resize() {
