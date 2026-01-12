@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>bi.lab | Business Intelligence & Growth</title>
     
+    <script>
+        (function() {
+            // 1. Si el usuario ya eligió idioma manualmente, respetarlo.
+            const savedLang = localStorage.getItem('user_lang');
+            if (savedLang === 'es') return; // Se queda aquí
+            if (savedLang === 'en') {
+                window.location.href = 'en.html'; // Redirige
+                return;
+            }
+            // 2. Si es la primera vez, detectar navegador.
+            const userLang = navigator.language || navigator.userLanguage; 
+            if (userLang.startsWith('en')) {
+                window.location.href = 'en.html';
+            }
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
@@ -32,7 +49,7 @@
         html { scroll-behavior: smooth; overflow-x: hidden; }
         
         body {
-            background-color: var(--bg-dark); /* Color base de fondo */
+            background-color: var(--bg-dark);
             color: var(--cream);
             font-family: var(--font-body);
             overflow-x: hidden;
@@ -41,8 +58,7 @@
             position: relative;
         }
 
-        /* CANVAS GLOBAL FIXED */
-        /* Z-index bajo para que quede detras del contenido, pero sobre el color de fondo */
+        /* CANVAS GLOBAL FIXED (Fondo de red neuronal) */
         #neural-canvas {
             position: fixed;
             top: 0;
@@ -50,7 +66,7 @@
             width: 100%;
             height: 100%;
             z-index: -1; 
-            opacity: 0.35; /* Sutil */
+            opacity: 0.35; 
             pointer-events: none;
         }
 
@@ -112,7 +128,7 @@
             margin: 0 auto;
             padding: 0 20px;
             position: relative;
-            z-index: 2; /* Asegura que el contenido esté sobre el canvas */
+            z-index: 2; 
         }
 
         /* --- HEADER & NAV --- */
@@ -140,7 +156,7 @@
 
         .logo img { height: 40px; }
 
-        .desktop-menu { display: flex; gap: 40px; }
+        .desktop-menu { display: flex; gap: 40px; align-items: center; }
         .desktop-menu a {
             font-size: 0.9rem;
             text-transform: uppercase;
@@ -158,10 +174,15 @@
         }
         .desktop-menu a:hover::after { width: 100%; }
 
+        /* LANGUAGE SWITCHER */
+        .lang-switch { display: flex; gap: 10px; margin-left: 20px; padding-left: 20px; border-left: 1px solid rgba(255,255,255,0.2); }
+        .lang-option { cursor: pointer; font-weight: 700; opacity: 0.5; transition: 0.3s; font-size: 0.85rem; }
+        .lang-option.active { opacity: 1; color: var(--gold); }
+        .lang-option:hover { opacity: 1; }
+
         .hamburger { display: none; font-size: 1.5rem; cursor: pointer; color: var(--cream); z-index: 1001; }
 
         /* --- SECCIONES COMUNES --- */
-        /* IMPORTANTE: Background transparent para ver el canvas */
         .process-section, .team-section, .cases-section { 
             padding: 120px 0; 
             position: relative;
@@ -179,12 +200,11 @@
             display: block;
         }
 
-        /* Indicador de Swipe para Mobile */
         .swipe-indicator {
             font-size: 0.8rem; 
             margin-top: 10px; 
             opacity: 0.6; 
-            display: none; /* Desktop hidden */
+            display: none; 
             align-items: center;
             gap: 8px;
         }
@@ -268,10 +288,10 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- CASES SECTION (Ahora Grid Nativa) --- */
+        /* --- CASES SECTION --- */
         .cases-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columnas en desktop */
+            grid-template-columns: repeat(3, 1fr);
             gap: 30px;
         }
 
@@ -337,7 +357,7 @@
         /* --- CLIENTS MARQUEE --- */
         .clients-section { 
             padding: 80px 0; 
-            background: rgba(14, 13, 15, 0.85); /* Semitransparente para ver fondo */
+            background: rgba(14, 13, 15, 0.85);
             border-top: 1px solid rgba(255,255,255,0.02);
             border-bottom: 1px solid rgba(255,255,255,0.02);
             overflow: hidden;
@@ -405,7 +425,6 @@
         /* --- CONTACT & FORM --- */
         .contact-section { 
             padding: 100px 0; 
-            /* Gradiente oscuro pero con transparencia */
             background: linear-gradient(180deg, rgba(10,10,12,0.8) 0%, rgba(26,26,30,0.95) 100%);
             backdrop-filter: blur(2px);
         }
@@ -479,7 +498,6 @@
 
         /* --- RESPONSIVE OPTIMIZATIONS --- */
         
-        /* Mobile Menu Panel */
         .mobile-menu {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
             background: var(--bg-dark); z-index: 2000;
@@ -513,16 +531,16 @@
             .hero-subtitle { font-size: 1.1rem; }
             
             /* --- SWIPEABLE SECTIONS (Process, Cases, Team) --- */
-            /* Aplicamos la misma lógica a las tres grillas */
+            /* Scroll horizontal con Snap */
             .process-grid, .cases-grid, .team-grid {
                 display: flex;
                 overflow-x: auto;
                 scroll-snap-type: x mandatory;
                 gap: 20px;
-                padding-bottom: 25px; /* Espacio para scrollbar/dedo */
-                margin: 0 -20px; /* Desborde para efecto full width */
-                padding-left: 20px; /* Padding interno inicial */
-                padding-right: 20px; /* Padding interno final */
+                padding-bottom: 25px;
+                margin: 0 -20px; 
+                padding-left: 20px;
+                padding-right: 20px; 
             }
             
             /* Tarjetas con efecto "Peek" (85% width) */
@@ -556,6 +574,11 @@
                 <a href="#cases">Nuestro Trabajo</a>
                 <a href="#team">Equipo</a>
                 <a href="#contact" style="color: var(--gold);">Contacto</a>
+                
+                <div class="lang-switch">
+                    <span class="lang-option active" style="color: var(--gold);">ES</span>
+                    <span class="lang-option" onclick="setLanguage('en')">EN</span>
+                </div>
             </nav>
             <div class="hamburger" id="hamburger-btn">
                 <i class="fa-solid fa-bars"></i>
@@ -570,6 +593,11 @@
         <a href="#cases" class="mobile-link">Nuestro Trabajo</a>
         <a href="#team" class="mobile-link">Equipo</a>
         <a href="#contact" class="mobile-link">Contacto</a>
+        
+        <div style="margin-top: 30px; display: flex; gap: 20px; font-size: 1.5rem;">
+             <span class="lang-option active" style="color: var(--gold);">ES</span>
+             <span class="lang-option" onclick="setLanguage('en')">EN</span>
+        </div>
     </div>
 
     <section id="home" class="hero">
@@ -860,9 +888,20 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <script>
         // Inicializar GSAP
         gsap.registerPlugin(ScrollTrigger);
+
+        // Language Switcher Logic
+        function setLanguage(lang) {
+            localStorage.setItem('user_lang', lang);
+            if (lang === 'en') {
+                window.location.href = 'en.html';
+            } else {
+                // Ya estamos en ES, no hace falta redirigir
+            }
+        }
 
         // Header Scroll Effect
         const header = document.getElementById('navbar');
